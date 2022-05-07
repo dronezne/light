@@ -1,9 +1,9 @@
 ```
-       ______
-      (  mu  )
-       ------
+       ______________________
+      (  mu (prototype / wip )
+       ----------------------
           \   ^__^
-           \  (oo)\_______                  a l p i n e b s p w m
+           \  (oo)\_______                        l i g h t
               (__)\       )\/\
                   ||----w |
                   ||     ||
@@ -27,28 +27,19 @@ setup-disk                              → reboot
 
 ```
 # apk add git
-# git clone --depth 1 https://github.com/dronezne/alpinebspwm.git
+# git clone --depth 1 https://github.com/dronezne/light.git
 ```
 
 ## 3: run script
 
 ```
-# sh alpinebspwm/install.sh
+# sh light/install.sh
 ```
 
 ## overview
 
 ```
-↓download the screenshot: https://github.com/dronezne/alpinebspwm/blob/main/screen.png
-workspace | battery | alsa ( klick → mute ) | time ( klick → date ) | connection # bar
-super + u → release → press 1 # poweroff ↓ | super + u → release → press 2 # reboot ↓↑
-```
-
-## ~ screen
-
-```
-if you run 'it' in a vm, adapt line 26 of
-bspwmrc (default 1920x1080) to your needs
+↓ download screenshot: https://github.com/dronezne/light/blob/main/screen.png
 ```
 
 ## trivials
@@ -58,8 +49,6 @@ bspwmrc (default 1920x1080) to your needs
  - execute commands as another user → run: doas
  - local-video-profile: $ mpvl <_path_to_file_>
  - local-audio-detached: $ ffp <_path_to_file_>
- | quit ffp, rad: super + alt + u → release → m
- - a cheat sheet: super + u → release → press h
  - if laptop: $ doas powertop --html=power.html
  - interrupt key = ctrl+shift+c (ctrl+c = copy)
 ```
@@ -116,7 +105,3 @@ $ nt       # no shell history
 $ rm       # careful +verbose
 # git commands: $ abbr --show
 ```
-
-## binding
-
-- `super + u` → release → [press](https://github.com/dronezne/alpinebspwm/blob/main/home/.config/sxhkd/sxhkdrc) `p`
