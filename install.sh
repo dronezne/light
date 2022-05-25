@@ -202,6 +202,10 @@ EOF
     net.ipv4.conf.default.accept_source_route=0
 EOF
 
+    # sbsh
+    echo "export TZ='$TZ'" \
+    | tee /etc/profile.d/timezone.sh >/dev/null
+
     # cron
     mkdir -p /etc/periodic/5min
 
@@ -291,15 +295,12 @@ EOF
         sed -i "s/xkb_layout/& $key/" "$swco"
     fi
 
-    # sbsh
-    echo "export TZ='$TZ'" \
-    | tee /etc/profile.d/timez*.sh >/dev/null
-
     # fish
     mkdir -p /etc/fish
 
     cat <<'EOF' \
     | tee -a /etc/fish/config.fish >/dev/null
+
     if status is-login
         if test -z $XDG_RUNTIME_DIR
             set -gx XDG_RUNTIME_DIR /tmp/(id -u)-runtime-dir
@@ -313,6 +314,7 @@ EOF
 
     sed -e '8s/[[:blank:]]\{8,\}/ /2' <<EOF \
     | tee -a /etc/fish/config.fish >/dev/null
+
     if status is-login
         set -gx TZ $TZ
         set -gx EDITOR nvim
