@@ -1,7 +1,7 @@
 ```
-       ______________________
-      (  mu (prototype / wip )
-       ----------------------
+       ______
+      (  mu  )
+       ------
           \   ^__^
            \  (oo)\_______                        l i g h t
               (__)\       )\/\
@@ -21,6 +21,11 @@ setup-keymap → setup-hostname → setup-interfaces  ↓
   rc-service networking start → setup-timezone    ↓
 setup-apkrepos → passwd → setup-sshd → setup-ntp  ↓
 setup-disk                              → reboot
+
+
+# note: do not create a user account (since 3.16.0)
+#     per setup-user or in a setup-alpine step
+# else: install.sh will exit 1 in silence - for now
 ```
 
 ## 2: git, clone
@@ -47,6 +52,9 @@ setup-disk                              → reboot
 ```
 .. but non-self-explanatory
  - execute commands as another user → run: doas
+ ~ resolution, refresh rate sway config line 10
+ ~ cursor theme and/or size sway config line 34
+ ~ default terminal font - size foot.ini line 7
  - local-video-profile: $ mpvl <_path_to_file_>
  - local-audio-detached: $ ffp <_path_to_file_>
  - if laptop: $ doas powertop --html=power.html
