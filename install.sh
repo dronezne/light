@@ -26,6 +26,13 @@
 
     printf \\n
 
+    # nuser
+    apk add -q musl-utils \
+    || exit 1
+
+    getent passwd "$USER" \
+    && exit 1
+
     # notice
     if subs ebspwm "$PWD"; then
         printf "\033[37;7merror\033[0m script executed from: %s\n" "$PWD"
