@@ -27,14 +27,20 @@
     printf \\n
 
     # nuser
-    apk add -q musl-utils \
-    || exit 1
+    if test "$(id -u)" != 0
+    then
+        exit 1
+    fi
 
-    getent passwd "$USER" \
-    && exit 1
+    usernt="$(grep -E 'x:[1-9]([0-9]){3}:' /etc/passwd | cut -d ':' -f1)"
+
+    if test -n "$usernt"; then
+        printf "\033[37;7mplz\033[0m don't set up an inital user account"
+        exit 1
+    fi
 
     # notice
-    if subs ebspwm "$PWD"; then
+    if subs light "$PWD"; then
         printf "\033[37;7merror\033[0m script executed from: %s\n" "$PWD"
         exit 1
     fi
@@ -254,15 +260,6 @@ EOF
     #RESOLV_CONF="no"
 EOF
 
-    # doas
-    cut -c 5- <<EOF \
-    | tee -a /etc/doas.d/doas.conf > /dev/null
-    permit persist :wheel
-    permit nopass keepenv root
-    permit nopass :wheel cmd reboot
-    permit nopass :wheel cmd poweroff
-EOF
-
     # lbat
     cut -c5- <<'EOF' \
     | tee /etc/periodic/5min/lowbat >/dev/null
@@ -284,6 +281,15 @@ EOF
     fi
 
     exit 0
+EOF
+
+    # doas
+    cut -c 5- <<EOF \
+    | tee /etc/doas.d/doas.conf > /dev/null
+    permit persist :wheel
+    permit nopass keepenv root
+    permit nopass :wheel cmd reboot
+    permit nopass :wheel cmd poweroff
 EOF
 
     # lout
@@ -392,9 +398,6 @@ EOF
     alias sc='source ~/.ashrc'
 EOF
 
-    # rcco
-    echo "rc_need=udev-settle" >> /etc/conf.d/localmount
-
     # grub
     lake="$(find /boot -name 'config-*' -maxdepth 1)"
     conf="$(grep -i -E '^conf.*shuffle.*p.*alloc.*y' "$lake")"
@@ -429,6 +432,9 @@ EOF
     if ! lsmod | grep -i -w -q '^wireguard'; then
         echo wireguard | tee -a /etc/modules > /dev/null
     fi
+
+    # rcco
+    echo "rc_need=udev-settle" >> /etc/conf.d/localmount
 
     # lbco
     if test -n "$chty" -a -n "$batt" -a -n "$adap"; then
