@@ -25,7 +25,7 @@ setup-disk                              → reboot
 
 # note: do not create a user account (since 3.16.0)
 #     per setup-user or in a setup-alpine step
-# else: install.sh will exit 1 in silence - for now
+#       else: install.sh will exit - for now
 ```
 
 ## 2: git, clone
