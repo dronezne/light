@@ -35,7 +35,7 @@
     usernt="$(grep -E 'x:[1-9]([0-9]){3}:' /etc/passwd | cut -d ':' -f1)"
 
     if test -n "$usernt"; then
-        printf "\033[37;7mplz\033[0m don't set up an inital user account"
+        echo "error: please don't set up an inital user account, $usernt"
         exit 1
     fi
 
@@ -49,7 +49,7 @@
     apk add pciutils >/dev/null
 
     if lspci -k | grep -i -C 2 -E 'vga|3d' | grep -i -q -w 'nvidia'; then
-        printf "\033[37;7msorry\033[0m this setup does not support nvidia"
+        printf "\033[37;7msorry,\033[0m light does not support: nvidia\n"
         exit 1
     fi
 
@@ -147,25 +147,26 @@
     # loho
     hna="$(grep '' /etc/hostname)"
 
-    if ! grep -i -w -q 'search' \
-    /etc/resolv.conf; then
-        cut -c9- <<EOF \
-        | tee /etc/hosts >/dev/null
+    grep -i -w -q 'search' \
+    /etc/resolv.conf \
+    || if test "$hna" != localhost
+    then
+        cut -c9- <<EOF >/etc/hosts
         127.0.0.1 localhost.localdomain localhost $hna.localdomain $hna
         ::1       localhost.localdomain localhost $hna.localdomain $hna
 EOF
+    rc-service -q hostname restart
     fi
 
     # ftzv
     TZ="$(find /etc/zoneinfo/ | tail -n1 | cut -d '/' -f4-)"
 
     # serv
-    rc-service -q hostname restart
+    rc-update -q add acpid default
     rc-update -q add alsa default
     rc-update -q add dbus default
     rc-update -q add urandom boot
     rc-update -q add local default
-    rc-update -q add acpid default
 
     # cssh
     rc-service -Nq sshd start
@@ -395,21 +396,27 @@ EOF
 
     # alias..
     alias ll='ls -lhAX'
-    alias sc='source ~/.ashrc'
+    alias src='source ~/.ashrc'
 EOF
 
     # grub
-    lake="$(find /boot -name 'config-*' -maxdepth 1)"
-    conf="$(grep -i -E '^conf.*shuffle.*p.*alloc.*y' "$lake")"
-    para="$(grep -i -w 'y' /sys/module/page_alloc/parameters/shuffle)"
-
-    if test -d /sys/firmware/efi; then
+    if test -d /sys/firmware/efi
+    then
+        lake="$(find /boot -name 'config-*' -maxdepth 1)"
+        conf="$(grep -i -E '^conf.*shuffle.*p.*alloc.*y' "$lake")"
+        para="$(grep -i 'y' /sys/module/page_alloc/parameters/shuffle)"
         if ! grep -w -q 'page_alloc.shuffle' /etc/default/grub; then
             if test -n "$conf" -a -z "$para"; then
                 sed -i 's/LINUX_DEFAULT="/&page_alloc.shuffle=1 /' \
                 /etc/default/grub; grub-mkconfig -o /boot/grub/grub.cfg
             fi
         fi
+    fi
+
+    # batv
+    if test -n "$chty"; then
+        batt="$(ls -d /sys/class/power_supply/BAT* | cut -d '/' -f 5)"
+        adap="$(ls -d /sys/class/power_supply/A* | cut -d '/' -f 5)"
     fi
 
     # fcon
@@ -423,10 +430,6 @@ EOF
     ln -s "$uca"/45-latin.conf "$ecd" >/dev/null 2>&1
 
     fc-cache -f
-
-    # bt
-    batt="$(ls -d /sys/class/power_supply/BAT* | cut -d '/' -f 5)"
-    adap="$(ls -d /sys/class/power_supply/A* | cut -d '/' -f 5)"
 
     # wgmo
     if ! lsmod | grep -i -w -q '^wireguard'; then
